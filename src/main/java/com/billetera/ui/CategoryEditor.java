@@ -24,7 +24,7 @@ public class CategoryEditor extends Window  {
 	TextField period = new TextField("Period");
 	
 	private Button save = new Button("Save");
-	private Button delete = new Button("Delete");	
+	private Button cancel = new Button("Cancel");	
 	
 	private Category category;
 	private Binder<Category> binder;
@@ -42,31 +42,31 @@ public class CategoryEditor extends Window  {
 		save.setClickShortcut(KeyCode.ENTER);
 		save.addClickListener(e -> save());
 		
+		name.setWidth("300");
+		description.setWidth("800");
+		period.setWidth("300");
+		
 	    //setSizeUndefined();
-	    HorizontalLayout actions = new HorizontalLayout(save, delete);
+	    HorizontalLayout actions = new HorizontalLayout(save, cancel);
 	    actions.setStyleName(ValoTheme.LAYOUT_COMPONENT_GROUP);
 	    VerticalLayout layout = new VerticalLayout();
 	    layout.setMargin(true);
 	    layout.setSpacing(true);
 	    layout.addComponents(name, description, period, actions);
 	    setContent(layout);		    
-	    
-	    binder = new Binder<>(Category.class);	    
+	    //binder = new Binder<>(Category.class);	    
 	}
 	
-	public void edit(Category category)	{
+	public void edit(Category category)	{		
 		
 		this.category = category;
-		/*if(category.getId() != null)	{
-			
-			binder.bindInstanceFields(this);
-		}*/
-		
+		binder = new Binder<>(Category.class);
 		binder.setBean(category);
+		binder.bindInstanceFields(this);
 	}
 	
 	private void save()	{
 				
 		categoryService.saveCategory(category);
-	}
+	}	
 }

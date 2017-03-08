@@ -1,6 +1,8 @@
 package com.billetera.ui;
 
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -35,7 +37,11 @@ public class CategoryView extends UI implements ClickListener, CloseListener {
 	
 	private List<Category> categories;
 	private Grid<Category> grid;
-
+	
+	private Button newCategory;
+	private Button accounts;
+	private Button edit;
+	private Button delete;
 	
 	@Override
 	protected void init(VaadinRequest request) {
@@ -56,7 +62,7 @@ public class CategoryView extends UI implements ClickListener, CloseListener {
 
 		Label titleComment = new Label("");
 		titleComment.setSizeUndefined(); // Take minimum space
-		Button newCategory = new Button("New Category");
+		newCategory = new Button("New Category");
 		newCategory.addClickListener(this);
 		titleBar.addComponent(newCategory);		
 				
@@ -65,9 +71,14 @@ public class CategoryView extends UI implements ClickListener, CloseListener {
 		root.addComponent(grid);	
 		populateGrid();
 				
-		Button accounts = new Button("Accounts");
-		Button edit = new Button("Edit");
-		Button delete = new Button("Delete");
+		accounts = new Button("Accounts");
+		edit = new Button("Edit");
+		delete = new Button("Delete");
+		
+		accounts.addClickListener(this);
+		edit.addClickListener(this);
+		delete.addClickListener(this);
+		
 		CssLayout actions = new CssLayout(accounts, edit, delete);
 		actions.setStyleName(ValoTheme.LAYOUT_COMPONENT_GROUP);
 		accounts.setStyleName(ValoTheme.BUTTON_PRIMARY);
@@ -76,6 +87,7 @@ public class CategoryView extends UI implements ClickListener, CloseListener {
 		panel.setContent(root);
 		
 		editor.addCloseListener(this);
+				
 	}
 	
 	private void populateGrid()	{
@@ -87,15 +99,29 @@ public class CategoryView extends UI implements ClickListener, CloseListener {
 
 	@Override
 	public void buttonClick(ClickEvent event) {
+		
+		Button clickedButton = event.getButton();
+		
+		if(clickedButton == newCategory)	{
+			
+			Category newCategory = new Category();
+			editor.edit(newCategory);
+			UI.getCurrent().addWindow(editor);			
+		}
+		else if(clickedButton == edit)	{
+			
+			Set<Category> selectedCategories = grid.getSelectedItems();
+			Iterator<Category> iterator = selectedCategories.iterator();
+			
+			while(iterator.hasNext())	{
 				
-		Category c1 = new Category();
-		c1.setId(234L);
-		c1.setName("food");
-		c1.setDescription("food exp");
-		c1.setPeriod("2018");
-		editor.edit(c1);
-	    // Add it to the root component
-	    UI.getCurrent().addWindow(editor);		
+				Category selectedCategory = iterator.next();
+				editor.edit(selectedCategory);
+				UI.getCurrent().addWindow(editor);
+				break;
+			}			
+		}
+		
 	}
 
 	@Override
